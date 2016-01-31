@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,6 +60,9 @@ public class MainActivity extends Activity implements OnClickListener,
     private ImageView imgProfilePic;
     private TextView txtName, txtEmail;
     private LinearLayout llProfileLayout;
+    private AutoCompleteTextView text;
+
+    String[] languages={"Android ","java","IOS","SQL","JDBC","Web services"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +71,17 @@ public class MainActivity extends Activity implements OnClickListener,
 
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
         btnSignOut = (Button) findViewById(R.id.btn_sign_out);
+        text=(AutoCompleteTextView)findViewById(R.id.autoComplete);
         btnRevokeAccess = (Button) findViewById(R.id.btn_revoke_access);
         imgProfilePic = (ImageView) findViewById(R.id.imgProfilePic);
         txtName = (TextView) findViewById(R.id.txtName);
         txtEmail = (TextView) findViewById(R.id.txtEmail);
         llProfileLayout = (LinearLayout) findViewById(R.id.llProfile);
+        ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,languages);
+        text.setAdapter(adapter);
+        text.setThreshold(1);
+
+
 
         // Button click listeners
         btnSignIn.setOnClickListener(this);
@@ -168,8 +179,14 @@ public class MainActivity extends Activity implements OnClickListener,
         if (isSignedIn) {
             btnSignIn.setVisibility(View.GONE);
             btnSignOut.setVisibility(View.VISIBLE);
-            btnRevokeAccess.setVisibility(View.VISIBLE);
+           // btnRevokeAccess.setVisibility(View.VISIBLE);
             llProfileLayout.setVisibility(View.VISIBLE);
+            text.setVisibility(View.VISIBLE);
+          ;
+            btnRevokeAccess.setVisibility(View.VISIBLE);
+
+
+
         } else {
             btnSignIn.setVisibility(View.VISIBLE);
             btnSignOut.setVisibility(View.GONE);
@@ -236,6 +253,7 @@ public class MainActivity extends Activity implements OnClickListener,
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_sign_in:
+                Log.e("jus","jow");
                 // Signin button clicked
                 signInWithGplus();
                 break;
@@ -247,6 +265,9 @@ public class MainActivity extends Activity implements OnClickListener,
                 // Revoke access button clicked
                 revokeGplusAccess();
                 break;
+
+
+
         }
     }
 
@@ -256,7 +277,9 @@ public class MainActivity extends Activity implements OnClickListener,
     private void signInWithGplus() {
         if (!mGoogleApiClient.isConnecting()) {
             mSignInClicked = true;
+
             resolveSignInError();
+
         }
     }
 
@@ -276,7 +299,7 @@ public class MainActivity extends Activity implements OnClickListener,
      * Revoking access from google
      * */
     private void revokeGplusAccess() {
-        if (mGoogleApiClient.isConnected()) {
+    /*    if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
                     .setResultCallback(new ResultCallback<Status>() {
@@ -288,7 +311,9 @@ public class MainActivity extends Activity implements OnClickListener,
                         }
 
                     });
-        }
+        }*/
+        Intent i = new Intent(this,MapsActivity.class);
+        startActivity(i);
     }
 
     /**

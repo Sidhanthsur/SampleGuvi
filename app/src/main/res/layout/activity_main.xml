@@ -58,11 +58,25 @@
         android:visibility="gone"
         android:layout_marginBottom="10dp"/>
 
+
+    <AutoCompleteTextView
+        android:id="@+id/autoComplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:layout_marginTop="65dp"
+        android:ems="10"
+        android:autoText="false"
+        android:hint="What can you teach ?" />
     <Button
         android:id="@+id/btn_revoke_access"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_revoke_access"
+        android:text="Continue to map"
         android:visibility="gone" />
+
+
 
 </LinearLayout>
