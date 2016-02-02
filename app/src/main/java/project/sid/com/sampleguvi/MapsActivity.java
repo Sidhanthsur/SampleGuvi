@@ -28,6 +28,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private int count=2;
     SessionManager session;
+    int[] co;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         session = new SessionManager(getApplicationContext());
 
         session.checkLogin();
+        co = new int[100];
 
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
@@ -72,11 +74,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for(int i =0 ; i < SplashScreen.i;i++)
         {
             places[i] = new LatLng(SplashScreen.alatitude[i],SplashScreen.alongitude[i]);
-            if(SplashScreen.teacher.equals("true"))
-            mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Teacher:"+SplashScreen.languages[i])).showInfoWindow();
-            else
-                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Learner:"+SplashScreen.languages[i])).showInfoWindow();
+            if(SplashScreen.teacher[i].equals("true")) {
+                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Teacher:" + SplashScreen.languages[i])).showInfoWindow();
 
+            }
+                else
+                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Learner:"+SplashScreen.languages[i])).showInfoWindow();
+            co[i]=2;
 
         }
        // LatLng sydney = new LatLng(13.0524, 80.2508);
@@ -106,32 +110,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-     /*  mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+       mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
            @Override
            public boolean onMarkerClick(Marker arg0) {
 
+               for (int i = 0; i < SplashScreen.i; i++) {
 
-               if (arg0.getTitle().equals("Ooty")) // if marker source is clicked
-               {
-                   String number = "9176734589";
-                   startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
-                   return true;
-               } else if (arg0.getTitle().equals("Warren")) {
-                   String number = "12345689";
-                   startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
-                   return true;
 
-               } else {
-                   String number = "9962102985";
-                   startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
-                   return true;
+                   if (arg0.getTitle().equals(SplashScreen.name[i])) // if marker source is clicked
+                   {
+                       String number = SplashScreen.mobile[i];
+                       if(co[i] % 2 == 0)
+                       {
+                           arg0.showInfoWindow();
+                           co[i]++;
+                       }
+                       else {
+                           startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
+                           return true;
+                       }
 
+                   }
                }
+               return true;
            }
 
 
-        });*/
+        });
     }
 
     @Override
@@ -139,7 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("please","come");
 
 
-            if (arg0.getTitle().equals("Ooty")) // if marker source is clicked
+            if (arg0.getTitle().equals("delete")) // if marker source is clicked
             {
                 String number = "9176734589";
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
