@@ -1,8 +1,12 @@
 package project.sid.com.sampleguvi;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -12,10 +16,15 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
+
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowLongClickListener;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -23,12 +32,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback ,  GoogleMap.OnInfoWindowLongClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
     private int count=2;
     SessionManager session;
-    int[] co;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         session = new SessionManager(getApplicationContext());
 
         session.checkLogin();
-        co = new int[100];
+
 
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
@@ -69,18 +78,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LatLng[] places = new LatLng[100];
+        LocationManager mng = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = mng.getLastKnownLocation(mng.getBestProvider(new Criteria(), false));
 
         // Add a marker in Sydney and move the camera
         for(int i =0 ; i < SplashScreen.i;i++)
         {
             places[i] = new LatLng(SplashScreen.alatitude[i],SplashScreen.alongitude[i]);
             if(SplashScreen.teacher[i].equals("true")) {
-                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Teacher:" + SplashScreen.languages[i])).showInfoWindow();
+                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Teacher:" + SplashScreen.languages[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))).showInfoWindow();
 
             }
                 else
-                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Learner:"+SplashScreen.languages[i])).showInfoWindow();
-            co[i]=2;
+                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Learner:" + SplashScreen.languages[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).showInfoWindow();
+
 
         }
        // LatLng sydney = new LatLng(13.0524, 80.2508);
@@ -89,10 +100,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       //  mMap.addMarker(new MarkerOptions().position(sydney).title("Chennai")).showInfoWindow();
       //  mMap.addMarker(new MarkerOptions().position(ooty).title("Ooty")).showInfoWindow();
       //  mMap.addMarker(new MarkerOptions().position(warren).title("Warren"));
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(
+       /* CameraPosition cameraPosition = new CameraPosition.Builder().target(
                 new LatLng(13.0524, 80.2508)).zoom(14).build();
 
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
+
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 14);
+        mMap.animateCamera(cameraUpdate);
 
         int  MY_PERMISSIONS_REQUEST_READ_CONTACTS=0;
         if (Build.VERSION.SDK_INT >= 23) {
@@ -109,56 +126,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setMyLocationEnabled(true);
 
 
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
-       mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-
-           @Override
-           public boolean onMarkerClick(Marker arg0) {
-
-               for (int i = 0; i < SplashScreen.i; i++) {
+            @Override
+            public boolean onMarkerClick(Marker arg0) {
+                arg0.showInfoWindow();
 
 
-                   if (arg0.getTitle().equals(SplashScreen.name[i])) // if marker source is clicked
-                   {
-                       String number = SplashScreen.mobile[i];
-                       if(co[i] % 2 == 0)
-                       {
-                           arg0.showInfoWindow();
-                           co[i]++;
-                       }
-                       else {
-                           startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
-                           return true;
-                       }
-
-                   }
-               }
-               return true;
-           }
+                return true;
+            }
 
 
         });
+        mMap.setOnInfoWindowLongClickListener(new OnInfoWindowLongClickListener() {
+            @Override
+            public void onInfoWindowLongClick(Marker marker) {
+                Log.e("yess","woo");
+
+                for(int i = 0 ; i< SplashScreen.i;i++)
+                {
+                    if(marker.getTitle().equals(SplashScreen.name[i]))
+                    {
+                        String number = SplashScreen.mobile[i];
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
+
+
+                    }
+                }
+
+
+
+
+
+            }
+        });
+
+
+
     }
 
-    @Override
-    public void onInfoWindowLongClick(Marker arg0) {
-        Log.e("please","come");
-
-
-            if (arg0.getTitle().equals("delete")) // if marker source is clicked
-            {
-                String number = "9176734589";
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
-        }
-        else
-        {
-            String number = "9176734555";
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
-        }
-
-
-
-    }
 }
 
 
