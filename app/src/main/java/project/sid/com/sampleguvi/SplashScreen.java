@@ -19,6 +19,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -30,42 +31,98 @@ import java.util.Map;
  */
 
 public class SplashScreen extends Activity {
-    private static int SPLASH_TIME_OUT = 3000;
-    Location location; // location
-    double latitude; // latitude
-    double longitude; // longitude
+
     SessionManager session;
-    private SharedPreferences sharedPreferences;
-    String uemail, upassword;
-    String json, result;
+    String email;
+    double latitude,longitude;
+    String json;
+    JSONArray users = null;
+    public static String[] name;
+    public static String[] mobile;
+    public static double[] alatitude;
+    public static double[] alongitude;
+    public static String[] languages;
+    public static String[] teacher;
+    public static int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sp.contains("email")) {
-            uemail = sp.getString("email", "");
-            upassword = sp.getString("password", "");
-          new GetContacts().execute();
+        session = new SessionManager(getApplicationContext());
+         name = new String[100];
+         mobile = new String[100];
+         alatitude = new double[100];
+        alongitude = new double[100];
+         languages = new String[100];
+         teacher = new String[100];
+
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+         email = user.get(SessionManager.KEY_EMAIL);
+        GPSTracker gps = new GPSTracker(SplashScreen.this);
+        if(gps.canGetLocation()){
+
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+
+            // \n is for new line
+            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
         }
-        else
-        {Intent i = new Intent(SplashScreen.this,MainActivity.class);
-        startActivity(i);}
+
+        new LocationUpdate().execute();
+
+
+
+
+
+
     }
-    private class GetContacts extends AsyncTask<String, Void, String> {
+
+    private class LocationUpdate extends AsyncTask<String, Void, String> {
 
 
         @Override
         protected String doInBackground(String... params) {
+            int count=2;
+
             try {
-                Log.e(uemail,"lol  "+upassword);
-                HttpGet httpget = new HttpGet("http://tchinmai.xyz/guvi/login.php?password=" + upassword + "&email=" + uemail);
+                // http://tchinmai.xyz/guvi/locationupdate.php?location=13.0336,80.2687&email=sid2@abc.com
+                HttpGet httpget = new HttpGet("http://tchinmai.xyz/guvi/locationupdate.php?location="+latitude+","+longitude+"&email="+email);
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response = httpclient.execute(httpget);
                 HttpEntity entityres = response.getEntity();
                 json = EntityUtils.toString(response.getEntity());
-                Log.e("jsonfgsv", json + "");
+                Log.e("in spalsh","email is  "+ email);
+                Log.e("json", json + "");
+                // Getting JSON Array node
+                JSONObject jsonObj = new JSONObject(json);
+                users = jsonObj.getJSONArray("users");
+                for ( i = 0; i < users.length(); i++)
+                {
+                    count=2;
+                    JSONObject c = users.getJSONObject(i);
+                   name[i]=c.getString("Name");
+                    mobile[i]=c.getString("mobile");
+                    teacher[i]=c.getString("teacher");
+                    languages[i]=c.getString("languages");
+                    String location = c.getString("Location");
+                    for (String retval: location.split(",", 2)){
+                        if(count % 2 == 0)
+                        alatitude[i]=Double.parseDouble(retval);
+                        else
+                            alongitude[i]=Double.parseDouble(retval);
+                        count = count + 1;
+
+                    };
+                 Log.e(i+name[i]+mobile[i]+location+teacher[i],"+"+mobile[i]+alatitude[i]+alongitude[i]);
+
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -76,24 +133,10 @@ public class SplashScreen extends Activity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (json != null) {
-                try {
-
-                    JSONObject jsonObject = new JSONObject(json);
-                    result = jsonObject.getString("result");
-                    Log.e("result", result);
-                    if (result.equals("success")) {
-
-
-
-                        Intent i = new Intent(SplashScreen.this, MapsActivity.class);
-                        startActivity(i);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            Intent i = new Intent(SplashScreen.this,MapsActivity.class);
+            startActivity(i);
         }
 
     }
-}
+
+    }

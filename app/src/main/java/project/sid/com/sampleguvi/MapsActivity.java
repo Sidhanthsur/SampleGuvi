@@ -21,15 +21,32 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.HashMap;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback ,  GoogleMap.OnInfoWindowLongClickListener {
 
     private GoogleMap mMap;
     private int count=2;
+    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        session = new SessionManager(getApplicationContext());
+
+        session.checkLogin();
+
+        // get user data from session
+        HashMap<String, String> user = session.getUserDetails();
+
+        // name
+        String password = user.get(SessionManager.KEY_PASSWORD);
+
+        // email
+        String email = user.get(SessionManager.KEY_EMAIL);
+
+        Log.e(password,"+"+email);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -49,22 +66,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        LatLng[] places = new LatLng[100];
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(13.0524, 80.2508);
-        LatLng ooty = new LatLng(11.4118, 76.6954);
-        LatLng warren = new LatLng(11.931,79.7852);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Chennai")).showInfoWindow();
-        mMap.addMarker(new MarkerOptions().position(ooty).title("Ooty")).showInfoWindow();
-        mMap.addMarker(new MarkerOptions().position(warren).title("Warren"));
+        for(int i =0 ; i < SplashScreen.i;i++)
+        {
+            places[i] = new LatLng(SplashScreen.alatitude[i],SplashScreen.alongitude[i]);
+            if(SplashScreen.teacher.equals("true"))
+            mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Teacher:"+SplashScreen.languages[i])).showInfoWindow();
+            else
+                mMap.addMarker(new MarkerOptions().position(places[i]).title(SplashScreen.name[i]).snippet("Learner:"+SplashScreen.languages[i])).showInfoWindow();
+
+
+        }
+       // LatLng sydney = new LatLng(13.0524, 80.2508);
+      //  LatLng ooty = new LatLng(11.4118, 76.6954);
+      //  LatLng warren = new LatLng(11.931,79.7852);
+      //  mMap.addMarker(new MarkerOptions().position(sydney).title("Chennai")).showInfoWindow();
+      //  mMap.addMarker(new MarkerOptions().position(ooty).title("Ooty")).showInfoWindow();
+      //  mMap.addMarker(new MarkerOptions().position(warren).title("Warren"));
         CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                new LatLng(13.0524, 80.2508)).zoom(9).build();
+                new LatLng(13.0524, 80.2508)).zoom(14).build();
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         int  MY_PERMISSIONS_REQUEST_READ_CONTACTS=0;
         if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.GET_ACCOUNTS)
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 Log.e("give this app ", "a permission already");
                 ActivityCompat.requestPermissions(this,

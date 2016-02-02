@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.util.Log;
 
 public class SessionManager {
     // Shared Preferences
@@ -25,7 +24,7 @@ public class SessionManager {
     int PRIVATE_MODE = 0;
 
     // Sharedpref file name
-    private static final String PREF_NAME = "Reg";
+    private static final String PREF_NAME = "AndroidHivePref";
 
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
@@ -46,12 +45,12 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email){
+    public void createLoginSession(String password, String email){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
         // Storing name in pref
-        editor.putString(KEY_PASSWORD, name);
+        editor.putString(KEY_PASSWORD, password);
 
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
@@ -102,14 +101,26 @@ public class SessionManager {
     /**
      * Clear session details
      * */
+    public void logoutUser(){
+        // Clearing all data from Shared Preferences
+        editor.clear();
+        editor.commit();
 
+        // After logout redirect user to Loing Activity
+        Intent i = new Intent(_context, MainActivity.class);
+        // Closing all the Activities
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Staring Login Activity
+        _context.startActivity(i);
+    }
 
     /**
      * Quick check for login
      * **/
     // Get Login State
     public boolean isLoggedIn(){
-        Log.e("accessed", "here");
         return pref.getBoolean(IS_LOGIN, false);
     }
 }

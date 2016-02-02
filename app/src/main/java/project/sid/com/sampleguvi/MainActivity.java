@@ -77,10 +77,10 @@ public class MainActivity extends Activity {
     String uemail;
     String upassword;
     String result;
-    SharedPreferences pref;
+
     SessionManager session;
 
-    SharedPreferences sharedpreferences;
+
 
 
 
@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
         password = (EditText) findViewById(R.id.editText2);
         login = (Button) findViewById(R.id.button);
         signup = (Button) findViewById(R.id.button2);
-        sharedpreferences = getSharedPreferences("sid", Context.MODE_PRIVATE);
+
 
 
 
@@ -154,17 +154,14 @@ public class MainActivity extends Activity {
                     Log.e("result", result);
                     if (result.equals("success")) {
 
-                        SharedPreferences.Editor editor = sharedpreferences.edit();
-
-
-                        editor.putString("Email", uemail);
-                        editor.putString("Password",upassword);
-                        editor.commit();
+                        session.createLoginSession(upassword, uemail);
 
 
                         Intent i = new Intent(MainActivity.this, MapsActivity.class);
                         startActivity(i);
                     }
+                    else
+                        Log.e("Logged in ","failure");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
