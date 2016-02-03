@@ -54,9 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onClick(View arg0) {
-                // Clear the session data
-                // This will clear all session data and
-                // redirect user to LoginActivity
+
                 session.logoutUser();
             }
         });
@@ -65,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
 
-        // name
+        // password
         String password = user.get(SessionManager.KEY_PASSWORD);
 
         // email
@@ -95,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationManager mng = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = mng.getLastKnownLocation(mng.getBestProvider(new Criteria(), false));
 
-        // Add a marker in Sydney and move the camera
+
         for(int i =0 ; i < SplashScreen.i;i++)
         {
             places[i] = new LatLng(SplashScreen.alatitude[i],SplashScreen.alongitude[i]);
@@ -162,7 +160,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(marker.getTitle().equals(SplashScreen.name[i]))
                     {
                         String number = SplashScreen.mobile[i];
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)));
+
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null)).putExtra("sms_body", "Hi, I would like to learn "+SplashScreen.languages[i]+" from you . Can you help me ?"));
 
 
                     }

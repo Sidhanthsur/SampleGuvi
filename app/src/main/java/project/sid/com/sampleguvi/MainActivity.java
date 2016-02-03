@@ -48,35 +48,30 @@ public class MainActivity extends Activity {
 
 
 
-    private static final int RC_SIGN_IN = 0;
+
     // Logcat tag
     private static final String TAG = "MainActivity";
 
-    // Profile pic image size in pixels
-    private static final int PROFILE_PIC_SIZE = 400;
 
-    // Google client to interact with Google API
-    private GoogleApiClient mGoogleApiClient;
+
+
+
 
     /**
-     * A flag indicating that a PendingIntent is in progress and prevents us
-     * from starting further intents.
+     * Created by sidha_000 on 2/1/2016.
      */
-    private boolean mIntentInProgress;
-
-    private boolean mSignInClicked;
-
-    private ConnectionResult mConnectionResult;
 
 
     private EditText email;
     private EditText password;
     private Button login;
     private Button signup;
+
     String json;
     String uemail;
     String upassword;
     String result;
+
 
     SessionManager session;
 
@@ -102,6 +97,10 @@ public class MainActivity extends Activity {
 
 
 
+
+
+
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +118,7 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
+
 
 
     }

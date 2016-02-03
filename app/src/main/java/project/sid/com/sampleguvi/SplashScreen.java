@@ -73,7 +73,7 @@ public class SplashScreen extends Activity {
                         0);
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED){
-                Log.e("give this app ", "a permission already");
+                Log.e("give this app ", "a permission ");
 
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -84,16 +84,14 @@ public class SplashScreen extends Activity {
                     latitude = gps.getLatitude();
                     longitude = gps.getLongitude();
 
-                    // \n is for new line
-                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+
+                  //  Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                 }else{
-                    // can't get location
-                    // GPS or Network is not enabled
-                    // Ask user to enable GPS/network in settings
+
                     gps.showSettingsAlert();
                 }
 
-                // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
             }
         }
         else {
@@ -104,7 +102,7 @@ public class SplashScreen extends Activity {
                longitude = gps.getLongitude();
 
                // \n is for new line
-               Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+              // Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
            } else {
                // can't get location
                // GPS or Network is not enabled
@@ -130,7 +128,7 @@ public class SplashScreen extends Activity {
             int count=2;
 
             try {
-                // http://tchinmai.xyz/guvi/locationupdate.php?location=13.0336,80.2687&email=sid2@abc.com
+
                 HttpGet httpget = new HttpGet("http://tchinmai.xyz/guvi/locationupdate.php?location="+latitude+","+longitude+"&email="+email);
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response = httpclient.execute(httpget);

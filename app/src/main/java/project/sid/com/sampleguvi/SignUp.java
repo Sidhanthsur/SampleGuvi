@@ -106,16 +106,14 @@ public class SignUp extends AppCompatActivity {
                     latitude = gps.getLatitude();
                     longitude = gps.getLongitude();
 
-                    // \n is for new line
+
                     Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                 }else{
-                    // can't get location
-                    // GPS or Network is not enabled
-                    // Ask user to enable GPS/network in settings
+
                     gps.showSettingsAlert();
                 }
 
-                // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
             }
         }
 
@@ -129,12 +127,10 @@ public class SignUp extends AppCompatActivity {
                 latitude = gps.getLatitude();
                 longitude = gps.getLongitude();
 
-                // \n is for new line
-                Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+
+                //Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
             } else {
-                // can't get location
-                // GPS or Network is not enabled
-                // Ask user to enable GPS/network in settings
+
                 gps.showSettingsAlert();
             }
         }
@@ -158,6 +154,7 @@ public class SignUp extends AppCompatActivity {
                 }
                 else
                 uteacher = false;
+
                 if(upassword.equals(ucpassword)) {
                     AsyncT asyncT = new AsyncT();
                     asyncT.execute();
@@ -183,18 +180,13 @@ public class SignUp extends AppCompatActivity {
     class AsyncT extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... voids) {
-          //  HttpClient httpclient = new DefaultHttpClient();
+
             String url = "http://tchinmai.xyz/guvi/signup.php?"+"name="+uname+"&email="+uemail+"&mobile="+uphone+"&password="+upassword+"&teacher="+uteacher+"&languages="+ulanguage+"&location="+latitude+","+longitude;
             Log.e("url",url);
 
-          //  HttpGet httppost = new HttpGet("http://requestb.in/1e0enfv1?"+"&name="+uname+"&email="+uemail+"&mobile="+uphone+"&password="+upassword+"&teacher="+uteacher+"&languages="+ulanguage+"&location="+latitude+","+longitude);
+
            try {
-              /* List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(8);
-               nameValuePairs.add(new BasicNameValuePair("teacher",uteacher.toString()));
-               nameValuePairs.add(new BasicNameValuePair("email", uemail));
-               nameValuePairs.add(new BasicNameValuePair("languages",ulanguage));
-               nameValuePairs.add(new BasicNameValuePair("mobile", uphone));*/
-               //HttpResponse response = httpclient.execute(httppost);
+
                HttpGet httpget = new HttpGet(url);
                HttpClient httpclient = new DefaultHttpClient();
                HttpResponse response = httpclient.execute(httpget);
