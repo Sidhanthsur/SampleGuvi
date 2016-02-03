@@ -1,15 +1,20 @@
 
 package project.sid.com.sampleguvi;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -60,20 +65,53 @@ public class SplashScreen extends Activity {
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
          email = user.get(SessionManager.KEY_EMAIL);
-        GPSTracker gps = new GPSTracker(SplashScreen.this);
-        if(gps.canGetLocation()){
+       if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        0);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED){
+                Log.e("give this app ", "a permission already");
 
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            0);
+                GPSTracker gps = new GPSTracker(SplashScreen.this);
+                if(gps.canGetLocation()){
 
-            // \n is for new line
-            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-        }else{
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+
+                    // \n is for new line
+                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+
+                // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            }
         }
+        else {
+           GPSTracker gps = new GPSTracker(SplashScreen.this);
+           if (gps.canGetLocation()) {
+
+               latitude = gps.getLatitude();
+               longitude = gps.getLongitude();
+
+               // \n is for new line
+               Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+           } else {
+               // can't get location
+               // GPS or Network is not enabled
+               // Ask user to enable GPS/network in settings
+               gps.showSettingsAlert();
+           }
+       }
 
         new LocationUpdate().execute();
 

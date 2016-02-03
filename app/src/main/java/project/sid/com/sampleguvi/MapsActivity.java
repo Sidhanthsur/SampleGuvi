@@ -14,6 +14,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -37,6 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private int count=2;
     SessionManager session;
+    Button button;
 
 
     @Override
@@ -46,6 +49,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         session = new SessionManager(getApplicationContext());
 
         session.checkLogin();
+        button = (Button) findViewById(R.id.button4);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // Clear the session data
+                // This will clear all session data and
+                // redirect user to LoginActivity
+                session.logoutUser();
+            }
+        });
 
 
         // get user data from session
@@ -108,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double lat = location.getLatitude();
         double lon = location.getLongitude();
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 14);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16);
         mMap.animateCamera(cameraUpdate);
 
         int  MY_PERMISSIONS_REQUEST_READ_CONTACTS=0;

@@ -1,10 +1,15 @@
 package project.sid.com.sampleguvi;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,6 +74,7 @@ public class SignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup);
+        session = new SessionManager(getApplicationContext());
         name = (EditText) findViewById(R.id.editText7);
         email = (EditText) findViewById(R.id.editText3);
         password = (EditText) findViewById(R.id.editText4);
@@ -84,24 +90,53 @@ public class SignUp extends AppCompatActivity {
         uphone = phone.getText().toString();
         ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,languages);
         autoCompleteTextView.setAdapter(adapter);
-        GPSTracker gps = new GPSTracker(SignUp.this);
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED)
+               {
+                Log.e("give this app ", "a permission already");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        0);
+
+                GPSTracker gps = new GPSTracker(SignUp.this);
+                if(gps.canGetLocation()){
+
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+
+                    // \n is for new line
+                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+
+                // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            }
+        }
 
 
+        else {
+            GPSTracker gps = new GPSTracker(SignUp.this);
 
+            // check if GPS enabled
+            if (gps.canGetLocation()) {
 
-        // check if GPS enabled
-        if(gps.canGetLocation()){
+                latitude = gps.getLatitude();
+                longitude = gps.getLongitude();
 
-             latitude = gps.getLatitude();
-             longitude = gps.getLongitude();
-
-            // \n is for new line
-            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-        }else{
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
+                // \n is for new line
+                Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+            } else {
+                // can't get location
+                // GPS or Network is not enabled
+                // Ask user to enable GPS/network in settings
+                gps.showSettingsAlert();
+            }
         }
 
 
@@ -123,7 +158,9 @@ public class SignUp extends AppCompatActivity {
                 }
                 else
                 uteacher = false;
-               /* if(upassword == ucpassword) {
+                if(upassword.equals(ucpassword)) {
+                    AsyncT asyncT = new AsyncT();
+                    asyncT.execute();
 
                 }
                 else
@@ -134,9 +171,8 @@ public class SignUp extends AppCompatActivity {
 
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                }*/
-                AsyncT asyncT = new AsyncT();
-                asyncT.execute();
+                }
+
             }
         });
 
@@ -163,6 +199,9 @@ public class SignUp extends AppCompatActivity {
                HttpClient httpclient = new DefaultHttpClient();
                HttpResponse response = httpclient.execute(httpget);
                Log.e("url", url);
+               session.createLoginSession(upassword, uemail);
+               Intent i = new Intent(SignUp.this,MapsActivity.class);
+               startActivity(i);
 
 
                return null;
@@ -170,15 +209,14 @@ public class SignUp extends AppCompatActivity {
          catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+           e.printStackTrace();
         }
             return null;
         }
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Intent i = new Intent(SignUp.this,MapsActivity.class);
-            startActivity(i);
+
 
 
 
