@@ -28,6 +28,12 @@ Long press on the name of the user
 
 </ol>
 
+#Tools used
+<ul>
+<li>Android studio</li>
+<li>Google maps V2 </li>
+<li>PHP and mySQL for the backend</li></ul>
+
 #Bugs and problems
 Not tested on Android 6 due to lack of hardware
 
