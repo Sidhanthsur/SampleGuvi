@@ -21,16 +21,15 @@ If the user is a teacher then additional details needed are
 </ul>
 
 <li>To view user information</li>
-Click on the marker
-)
+<ul><li>Click on the marker (Blue marker for teacher and green for learners)</li></ul>
+
 <li> To communicate with the user <li>
 Long press on the name of the user
 
 </ol>
 
 #Tools used
-<ul>
-<li>Android studio</li>
+<ul><li>Android studio</li>
 <li>Google maps V2 </li>
 <li>PHP and mySQL for the backend</li></ul>
 
